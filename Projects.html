@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Vault | Devangi Sakariya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --accent: #00ff9d;
+            --card-bg: #111111;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: white; line-height: 1.6; }
+
+        /* Navigation */
+        nav { 
+            padding: 1.5rem 8%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid var(--border); 
+            position: sticky; 
+            top: 0; 
+            background: rgba(3,3,3,0.9); 
+            backdrop-filter: blur(15px); 
+            z-index: 100; 
+        }
+        .back-link { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; transition: 0.3s; }
+        .back-link:hover { opacity: 0.7; }
+
+        /* Header */
+        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: -2px; margin-bottom: 10px; }
+        .glow { color: var(--accent); text-shadow: 0 0 15px rgba(0, 255, 157, 0.3); }
+        .subtitle { color: var(--text-dim); margin-bottom: 40px; max-width: 600px; }
+
+        /* Filter Tabs */
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 50px; flex-wrap: wrap; }
+        .filter-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+            padding: 12px 24px; border-radius: 100px; cursor: pointer; transition: 0.3s; font-weight: 600; font-size: 0.85rem;
+        }
+        .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 255, 157, 0.1); }
+
+        /* Gallery Sections */
+        .gallery-section { display: none; animation: fadeIn 0.6s ease forwards; }
+        .gallery-section.active { display: block; }
+
+        .section-info { margin-bottom: 30px; }
+        .section-info h2 { font-size: 1.8rem; margin-bottom: 8px; }
+
+        /* Grid System */
+        .proof-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        
+        .proof-card {
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        .proof-card:hover { border-color: var(--accent); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        /* Clickable Image Container */
+        .image-link { display: block; width: 100%; height: 260px; position: relative; overflow: hidden; border-bottom: 1px solid var(--border); cursor: zoom-in; }
+        .image-link img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.9; }
+        .proof-card:hover .image-link img { transform: scale(1.05); opacity: 1; }
+
+        /* Badge Visibility Fix */
+        .type-badge {
+            position: absolute; top: 15px; left: 15px;
+            background: #030303; 
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            border: 1px solid var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+            z-index: 2;
+        }
+
+        /* Card Content - Fixed Text Clipping */
+        .card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-content h3 { font-size: 1.15rem; margin-bottom: 12px; }
+        .card-content p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5; }
+        
+        /* Technology Tags */
+        .tech-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+        .tech-tags span, .tech-tags a { 
+            font-size: 0.7rem; 
+            color: var(--accent); 
+            background: rgba(0, 255, 157, 0.05); 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            border: 1px solid rgba(0, 255, 157, 0.2); 
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .tech-tags a:hover { background: var(--accent); color: #000; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .proof-grid { grid-template-columns: 1fr; }
+            nav { padding: 1rem 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div style="font-weight: 900; font-size: 1.2rem;">DS<span class="glow">.</span></div>
+        <a href="index.html" class="back-link">← BACK TO HOME</a>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Project <span class="glow">Vault.</span></h1>
+            <p class="subtitle">A visual archive of my development journey, proving my expertise in full-stack logic and e-commerce design.</p>
+			<p class="subtitle">
+			Beyond full builds, I specialize in live site operations: writing custom backend logic, managing database content, and refining UI through direct code manipulation to ensure peak performance.
+			</p>
+        </header>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterGallery('shopify')">Shopify & CMS</button>
+            <button class="filter-btn" onclick="filterGallery('wordpress')">WordPress E-commerce</button>
+            <button class="filter-btn" onclick="filterGallery('laravel')">Laravel & PHP</button>
+        </div>
+
+        <div id="shopify" class="gallery-section active">
+            <div class="section-info">
+                <h2>Shopify Solutions</h2>
+                <p style="color:var(--text-dim)">Customizing high-end storefronts and custom Liquid modules.</p>
+            </div>
+            <div class="proof-grid">
+                <div class="proof-card">
+                    <a href="img/HOUSE-OF-HOLY-ART-04-16-2026_04_44_PM.png" target="_blank" class="image-link">
+                        <span class="type-badge">Frontend Proof</span>
+                        <img src="img/HOUSE-OF-HOLY-ART-04-16-2026_04_44_PM.png" alt="House of Holy Art UI">
+                    </a>
+                    <div class="card-content">
+                        <h3>House of Holy Art - UI</h3>
+                        <p>Developed custom responsive website modules during my internship at Wodex Web. Focused on high-end luxury aesthetics and user experience.</p>
+                        <div class="tech-tags">
+                            <span>Shopify</span><span>Liquid</span><span>CSS</span><a href="https://houseofholyart.com/" target="_blank">Live Site</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-card">
+                    <a href="img/HOUSE-OF-HOLY-ART-·-Edit-minimog-5-8-0-·-Shopify-04-16-2026_04_46_PM.png" target="_blank" class="image-link">
+                        <span class="type-badge">Backend Access</span>
+                        <img src="img/HOUSE-OF-HOLY-ART-·-Edit-minimog-5-8-0-·-Shopify-04-16-2026_04_46_PM.png" alt="Shopify Editor">
+                    </a>
+                    <div class="card-content">
+                        <h3>Admin Logic Implementation</h3>
+                        <p>Verified backend developer access showing schema configurations inside the Shopify theme editor for House of Holy Art.</p>
+                        <div class="tech-tags">
+                            <span>Shopify Admin</span><span>Theme Dev</span>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				
+				<div class="proof-card">
+                    <a href="img/HOUSE-OF-HOLY-ART-·-Edit-minimog-5-8-0-·-Shopify-04-17-2026_10_44_AM.png" target="_blank" class="image-link">
+                        <span class="type-badge">Backend Access</span>
+                        <img src="img/HOUSE-OF-HOLY-ART-·-Edit-minimog-5-8-0-·-Shopify-04-17-2026_10_44_AM.png" alt="Shopify Editor">
+                    </a>
+                    <div class="card-content">
+                        <h3>Admin Logic Implementation</h3>
+                        <p>Verified backend developer access showing custom Liquid code blocks and schema configurations inside the Shopify theme editor for House of Holy Art.</p>
+                        <div class="tech-tags">
+                            <span>Shopify Admin</span><span>Theme Dev</span>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				
+				
+            </div>
+        </div>
+
+        <div id="wordpress" class="gallery-section">
+            <div class="section-info">
+                <h2>WordPress E-commerce</h2>
+                <p style="color:var(--text-dim)">Building scalable stores using WooCommerce and custom plugins</p>
+            </div>
+            <div class="proof-grid">
+                <div class="proof-card">
+                    <div class="image-link">
+					<span class="type-badge">CMS Proof</span>
+				       <a href="img/Woo-commerce-04-17-2026_11_03_AM.png" target="_blank" rel="noopener noreferrer">
+                          <img src="img/Woo-commerce-04-17-2026_11_03_AM.png" alt="WordPress Project">
+                       </a>
+                    </div>
+                    <div class="card-content">
+                        <h3>Woo Commerce</h3>
+                        <p>Hands-on experience with WordPress themes and WooCommerce to build user-friendly e-commerce solutions.</p>
+                        <div class="tech-tags">
+                            <span>WordPress</span><span>WooCommerce</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+				
+			       <div class="proof-card">
+                    <div class="image-link">
+					<span class="type-badge">CMS Proof</span>
+				       <a href="img/Shop-–-Woo-commerce-04-17-2026_11_03_AM.png" target="_blank" rel="noopener noreferrer">
+                          <img src="img/Shop-–-Woo-commerce-04-17-2026_11_03_AM.png" alt="WordPress Project">
+                       </a>
+                    </div>
+                    <div class="card-content">
+                        <h3>Woo Commerce Shop Page</h3>
+                        <p>Hands-on experience with WordPress themes and WooCommerce to build user-friendly e-commerce solutions.</p>
+                        <div class="tech-tags">
+                            <span>WordPress</span><span>WooCommerce</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				<div class="proof-card">
+                    <div class="image-link">
+					<span class="type-badge">CMS Proof</span>
+				       <a href="img/Dashboard-‹-Woo-commerce-—-WordPress-04-17-2026_11_05_AM.png" target="_blank" rel="noopener noreferrer">
+                          <img src="img/Dashboard-‹-Woo-commerce-—-WordPress-04-17-2026_11_05_AM.png" alt="WordPress Project">
+                       </a>
+                    </div>
+                    <div class="card-content">
+                        <h3>Woo Commerce Dashboard</h3>
+                        <p>Hands-on experience with WordPress themes and WooCommerce to build user-friendly e-commerce solutions.</p>
+                        <div class="tech-tags">
+                            <span>WordPress</span><span>WooCommerce</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				<div class="proof-card">
+                    <div class="image-link">
+					<span class="type-badge">CMS Proof</span>
+				       <a href="img/Home-04-17-2026_11_19_AM.png" target="_blank" rel="noopener noreferrer">
+                          <img src="img/Home-04-17-2026_11_19_AM.png" alt="WordPress Project">
+                       </a>
+                    </div>
+                    <div class="card-content">
+                        <h3>wordpress</h3>
+                        <p>Hands-on experience with WordPress themes to build user-friendly .</p>
+                        <div class="tech-tags">
+                            <span>WordPress</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+				
+				<div class="proof-card">
+                    <div class="image-link">
+					<span class="type-badge">CMS Proof</span>
+				       <a href="img/Dashboard-‹-—-WordPress-04-17-2026_11_20_AM.png" target="_blank" rel="noopener noreferrer">
+                          <img src="img/Dashboard-‹-—-WordPress-04-17-2026_11_20_AM.png" alt="WordPress Project">
+                       </a>
+                    </div>
+                    <div class="card-content">
+                        <h3>wordpress</h3>
+                        <p>Hands-on experience with WordPress themes to build user-friendly .</p>
+                        <div class="tech-tags">
+                            <span>WordPress</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+		   </div>
+	  </div>
+		
+		
+		
+
+
+        <div id="laravel" class="gallery-section">
+            <div class="section-info">
+                <h2>Laravel & PHP Development</h2>
+                <p style="color:var(--text-dim)">Architecting secure databases and custom administrative tools.</p>
+            </div>
+            <div class="proof-grid">
+			
+			 <div class="proof-card">
+                    <a href="img/Picture1.png" target="_blank" class="image-link">
+                        <span class="type-badge">Laravel System</span>
+                        <img src="img/Picture1.png" alt="Mirror Store Dashboard">
+                    </a>
+                    <div class="card-content">
+                        <h3>laravel Admin side</h3>
+                        <p>Designed a scalable admin panel with full authentication, product catalog, and structured backend architecture using Laravel.</p>
+                        <div class="tech-tags">
+                            <span>Laravel</span><span>MySQL</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+			
+			
+                <div class="proof-card">
+                    <a href="img/Admin-Dashboard-Velzon-Admin-Dashboard-Template-04-16-2026_05_10_PM.png" target="_blank" class="image-link">
+                        <span class="type-badge">Laravel System</span>
+                        <img src="img/Admin-Dashboard-Velzon-Admin-Dashboard-Template-04-16-2026_05_10_PM.png" alt="Mirror Store Dashboard">
+                    </a>
+                    <div class="card-content">
+                        <h3>laravel Admin side</h3>
+                        <p>Designed a scalable admin panel with full authentication, product catalog, and structured backend architecture using Laravel.</p>
+                        <div class="tech-tags">
+                            <span>Laravel</span><span>MySQL</span><span>PHP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="proof-card">
+                    <a href="img/Screenshot 2026-04-16 171538.png" target="_blank" class="image-link">
+                        <span class="type-badge">Laravel Code </span>
+                        <img src="img/Screenshot 2026-04-16 171538.png" alt="Gaukrupa Admin">
+                    </a>
+                    <div class="card-content">
+                        <h3>Admin Panel</h3>
+                        <p>Developed a custom Laravel dashboard for internal management as a Web Development Intern at Wodex Web.</p>
+                        <div class="tech-tags">
+                            <span>Laravel</span>
+                        </div>
+                    </div>
+                </div>
+				
+				 <div class="proof-card">
+                    <a href="img/login.png" target="_blank" class="image-link">
+                        <span class="type-badge">Php System </span>
+                        <img src="img/login.png" alt="Gaukrupa Admin">
+                    </a>
+                    <div class="card-content">
+                        <h3>Login Page</h3>
+                        <p>Developed a custom php login page for internal access as a Web Development student.</p>
+                        <div class="tech-tags">
+                            <span>Php</span>
+                        </div>
+                    </div>
+                </div>
+				
+				 <div class="proof-card">
+                    <a href="img/Screenshot 2026-04-17 122633.png" target="_blank" class="image-link">
+                        <span class="type-badge">Php dashboard code </span>
+                        <img src="img/Screenshot 2026-04-17 122633.png" alt="Gaukrupa Admin">
+                    </a>
+                    <div class="card-content">
+                        <h3>Dashboard Code</h3>
+                        <p>Developed a custom php admin dashboard code for internal management as a Web Development student.</p>
+                        <div class="tech-tags">
+                            <span>Php</span>
+                        </div>
+                    </div>
+                </div>
+				
+				 <div class="proof-card">
+                    <a href="img/home page.png" target="_blank" class="image-link">
+                        <span class="type-badge">Php visitor side</span>
+                        <img src="img/home page.png" alt="Gaukrupa Admin">
+                    </a>
+                    <div class="card-content">
+                        <h3>visitor Side</h3>
+                        <p>Developed custom PHP frontend components to bridge complex backend logic with high-performance user interfaces.</p>
+                        <div class="tech-tags">
+                            <span>Php</span>
+                        </div>
+                    </div>
+                </div>
+				
+				 <div class="proof-card">
+                    <a href="img/Screenshot 2026-04-17 123402.png" target="_blank" class="image-link">
+                        <span class="type-badge">Php visitor side code</span>
+                        <img src="img/Screenshot 2026-04-17 123402.png" alt="Gaukrupa Admin">
+                    </a>
+                    <div class="card-content">
+                        <h3>visitor Side code</h3>
+                        <p>Developed custom PHP frontend components to bridge complex backend logic with high-performance user interfaces.</p>
+                        <div class="tech-tags">
+                            <span>Php</span>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				
+				
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterGallery(category) {
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Toggle sections
+            document.querySelectorAll('.gallery-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(category).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
